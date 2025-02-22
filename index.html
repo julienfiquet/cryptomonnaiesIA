@@ -89,9 +89,11 @@
             <input type="datetime-local" id="appointmentTime">
             <button onclick="bookAppointment()">Réserver</button>
             <p id="bookingMessage"></p>
+            <button id="payButton">Payer la consultation</button>
         </div>
     </div>
 
+    <script src="https://js.stripe.com/v3/"></script>
     <script>
         async function fetchCryptoPrices() {
             try {
@@ -118,6 +120,13 @@
                 document.getElementById('bookingMessage').innerText = 'Veuillez remplir tous les champs';
             }
         }
+
+        document.getElementById("payButton").addEventListener("click", async function() {
+            const response = await fetch("/create-checkout-session", { method: "POST" });
+            const session = await response.json();
+            const stripe = Stripe("votre_clé_publique_stripe");
+            stripe.redirectToCheckout({ sessionId: session.id });
+        });
     </script>
 </body>
 </html>
