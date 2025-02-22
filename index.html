@@ -12,80 +12,56 @@
             font-family: Arial, sans-serif;
             background-color: #121212;
             color: #ffffff;
-            overflow: hidden;
-        }
-        .background-video {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: -1;
         }
         .container {
-            position: relative;
             width: 100%;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
             text-align: center;
+            padding: 20px;
         }
         h1 {
             font-size: 2.5rem;
             margin-bottom: 20px;
         }
-        .crypto-prices, .market-analysis, .adsense-container {
-            font-size: 1.2rem;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 15px;
+        .section {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
             border-radius: 10px;
-            margin-top: 20px;
+            margin: 10px 0;
+            width: 90%;
+            max-width: 600px;
         }
-        .ai-chat {
-            margin-top: 20px;
-        }
-        input, button {
+        button {
             padding: 10px;
             border-radius: 5px;
             border: none;
-        }
-        button {
             background-color: #008CBA;
             color: white;
             cursor: pointer;
+            margin-top: 10px;
         }
-        .booking-section, .affiliation-section {
-            margin-top: 40px;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-        }
-        .booking-section input, .booking-section button, .affiliation-section a {
-            margin: 10px;
+        input {
             padding: 10px;
+            width: 100%;
+            margin: 10px 0;
+        }
+        .adsense-container {
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <video autoplay muted loop class="background-video">
-        <source src="crypto_background.mp4" type="video/mp4">
-    </video>
-    
     <div class="container">
-        <h1>Bienvenue sur Crypto AI Dashboard</h1>
-        <div class="crypto-prices" id="crypto-prices">
-            Chargement des prix des cryptos...
-        </div>
-        <p id="crypto-error" style="color: red; display: none;">Erreur lors du chargement des prix des cryptos.</p>
-        <div class="market-analysis" id="market-analysis">
-            Chargement de l'analyse du marché...
-        </div>
+        <h1>Crypto AI Dashboard</h1>
         
-        <!-- Bloc publicitaire Google AdSense -->
+        <div class="section" id="crypto-prices">Chargement des prix des cryptos...</div>
+        <p id="crypto-error" style="color: red; display: none;">Erreur lors du chargement des prix des cryptos.</p>
+        
+        <div class="section" id="market-analysis">Chargement de l'analyse du marché...</div>
+        
         <div class="adsense-container">
             <ins class="adsbygoogle"
                 style="display:block"
@@ -93,34 +69,84 @@
                 data-ad-slot="YYYYYYYYYY"
                 data-ad-format="auto"
                 data-full-width-responsive="true"></ins>
-            <script>
-                (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
         </div>
         
-        <div class="ai-chat">
-            <input type="text" id="userInput" placeholder="Posez une question sur les cryptos...">
-            <button onclick="askAI()">Envoyer</button>
-        </div>
-        
-        <div class="booking-section">
+        <div class="section">
             <h2>Réservez une consultation</h2>
             <input type="text" id="userName" placeholder="Votre nom">
             <input type="datetime-local" id="appointmentTime">
             <button onclick="bookAppointment()">Réserver</button>
             <p id="bookingMessage"></p>
-            <button id="payButton">Payer par carte bancaire</button>
-            <button id="cryptoPayButton">Payer avec Coinbase</button>
-            <button id="binancePayButton">Payer avec Binance Pay</button>
+            <button onclick="payWithCard()">Payer par carte</button>
+            <button onclick="payWithCrypto()">Payer en crypto</button>
+            <button onclick="payWithBinance()">Payer avec Binance Pay</button>
         </div>
-
-        <div class="affiliation-section">
-            <h2>Profitez de nos offres partenaires</h2>
-            <p>Rejoignez les meilleures plateformes de trading et bénéficiez d'avantages exclusifs :</p>
+        
+        <div class="section">
+            <h2>Offres partenaires</h2>
             <a href="https://www.binance.com/?ref=votre_code_affiliation" target="_blank">S'inscrire sur Binance</a><br>
             <a href="https://www.coinbase.com/join/votre_code_affiliation" target="_blank">S'inscrire sur Coinbase</a><br>
             <a href="https://ledger.com/?r=votre_code_affiliation" target="_blank">Acheter un Ledger Wallet</a>
         </div>
     </div>
+
+    <script>
+        async function fetchCryptoPrices() {
+            try {
+                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,ripple&vs_currencies=usd');
+                if (!response.ok) throw new Error('Problème réseau');
+                const data = await response.json();
+                document.getElementById('crypto-prices').innerHTML = `
+                    Bitcoin: $${data.bitcoin.usd}<br>
+                    Ethereum: $${data.ethereum.usd}<br>
+                    Ripple: $${data.ripple.usd}
+                `;
+                document.getElementById('crypto-error').style.display = 'none';
+            } catch (error) {
+                console.error('Erreur lors du chargement des prix des cryptos', error);
+                document.getElementById('crypto-error').style.display = 'block';
+            }
+        }
+        fetchCryptoPrices();
+        setInterval(fetchCryptoPrices, 60000);
+
+        async function fetchMarketAnalysis() {
+            try {
+                const response = await fetch('https://api.coingecko.com/api/v3/global');
+                if (!response.ok) throw new Error('Problème réseau');
+                const data = await response.json();
+                document.getElementById('market-analysis').innerHTML = `
+                    Market Cap Global: $${(data.data.total_market_cap.usd / 1e12).toFixed(2)}T<br>
+                    Volume Global: $${(data.data.total_volume.usd / 1e9).toFixed(2)}B<br>
+                    Bitcoin Dominance: ${data.data.market_cap_percentage.btc.toFixed(2)}%
+                `;
+            } catch (error) {
+                console.error('Erreur lors du chargement de l'analyse du marché', error);
+            }
+        }
+        fetchMarketAnalysis();
+        setInterval(fetchMarketAnalysis, 60000);
+
+        function bookAppointment() {
+            const name = document.getElementById('userName').value;
+            const time = document.getElementById('appointmentTime').value;
+            if (name && time) {
+                document.getElementById('bookingMessage').innerText = `Rendez-vous confirmé pour ${name} le ${new Date(time).toLocaleString()}`;
+            } else {
+                document.getElementById('bookingMessage').innerText = 'Veuillez remplir tous les champs';
+            }
+        }
+
+        function payWithCard() {
+            window.location.href = "https://checkout.stripe.com/pay/votre_checkout_id";
+        }
+        function payWithCrypto() {
+            window.location.href = "https://commerce.coinbase.com/checkout/votre_checkout_id";
+        }
+        function payWithBinance() {
+            window.location.href = "https://pay.binance.com/checkout/votre_checkout_id";
+        }
+    </script>
 </body>
 </html>
