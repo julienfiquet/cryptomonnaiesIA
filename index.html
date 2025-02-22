@@ -55,11 +55,22 @@
             color: white;
             cursor: pointer;
         }
+        .booking-section {
+            margin-top: 40px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .booking-section input, .booking-section button {
+            margin: 10px;
+            padding: 10px;
+        }
     </style>
 </head>
 <body>
     <video autoplay muted loop class="background-video">
-        <source src="assets/video.mp4" type="video/mp4">
+        <source src="crypto_background.mp4" type="video/mp4">
     </video>
     
     <div class="container">
@@ -70,6 +81,14 @@
         <div class="ai-chat">
             <input type="text" id="userInput" placeholder="Posez une question sur les cryptos...">
             <button onclick="askAI()">Envoyer</button>
+        </div>
+        
+        <div class="booking-section">
+            <h2>Réservez une consultation</h2>
+            <input type="text" id="userName" placeholder="Votre nom">
+            <input type="datetime-local" id="appointmentTime">
+            <button onclick="bookAppointment()">Réserver</button>
+            <p id="bookingMessage"></p>
         </div>
     </div>
 
@@ -89,6 +108,16 @@
         }
         fetchCryptoPrices();
         setInterval(fetchCryptoPrices, 60000);
+
+        function bookAppointment() {
+            const name = document.getElementById('userName').value;
+            const time = document.getElementById('appointmentTime').value;
+            if (name && time) {
+                document.getElementById('bookingMessage').innerText = `Rendez-vous confirmé pour ${name} le ${new Date(time).toLocaleString()}`;
+            } else {
+                document.getElementById('bookingMessage').innerText = 'Veuillez remplir tous les champs';
+            }
+        }
     </script>
 </body>
 </html>
