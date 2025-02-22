@@ -55,14 +55,14 @@
             color: white;
             cursor: pointer;
         }
-        .booking-section {
+        .booking-section, .affiliation-section {
             margin-top: 40px;
             background: rgba(0, 0, 0, 0.6);
             padding: 20px;
             border-radius: 10px;
             text-align: center;
         }
-        .booking-section input, .booking-section button {
+        .booking-section input, .booking-section button, .affiliation-section a {
             margin: 10px;
             padding: 10px;
         }
@@ -89,7 +89,17 @@
             <input type="datetime-local" id="appointmentTime">
             <button onclick="bookAppointment()">Réserver</button>
             <p id="bookingMessage"></p>
-            <button id="payButton">Payer la consultation</button>
+            <button id="payButton">Payer par carte bancaire</button>
+            <button id="cryptoPayButton">Payer avec Coinbase</button>
+            <button id="binancePayButton">Payer avec Binance Pay</button>
+        </div>
+
+        <div class="affiliation-section">
+            <h2>Profitez de nos offres partenaires</h2>
+            <p>Rejoignez les meilleures plateformes de trading et bénéficiez d'avantages exclusifs :</p>
+            <a href="https://www.binance.com/?ref=votre_code_affiliation" target="_blank">S'inscrire sur Binance</a><br>
+            <a href="https://www.coinbase.com/join/votre_code_affiliation" target="_blank">S'inscrire sur Coinbase</a><br>
+            <a href="https://ledger.com/?r=votre_code_affiliation" target="_blank">Acheter un Ledger Wallet</a>
         </div>
     </div>
 
@@ -120,13 +130,6 @@
                 document.getElementById('bookingMessage').innerText = 'Veuillez remplir tous les champs';
             }
         }
-
-        document.getElementById("payButton").addEventListener("click", async function() {
-            const response = await fetch("/create-checkout-session", { method: "POST" });
-            const session = await response.json();
-            const stripe = Stripe("votre_clé_publique_stripe");
-            stripe.redirectToCheckout({ sessionId: session.id });
-        });
     </script>
 </body>
 </html>
